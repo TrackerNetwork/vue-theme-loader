@@ -37,27 +37,46 @@ export const addTitleQualifier = (source: string, styleDescriptor: SFCBlock): st
     ? styleDescriptor.start
     : source.indexOf('>', styleDescriptor.end);
 
-  const qualifiedStyle = `#app[data-title="${title}"] { ${source.slice(start, end)} }`;
+  const style = source.substring(start, end);
+  const contentStart = style.indexOf(styleDescriptor.content, start);
+  const contentEnd = contentStart + styleDescriptor.content.length;
+
+  const qualifiedStyle = `#app[data-title="${title}"] { ${styleDescriptor.content} }`;
 
   return source.substring(0, start)
+    + style.substring(0, contentStart)
     + qualifiedStyle
+    + style.substring(contentEnd)
     + source.substring(end + 1, source.length);
 };
 
 /**
- * Given the source of an SFC and the name of a theme, this method will remove all
- * style blocks that have a theme attribute specified whose value does not equal the
- * given theme name. It will not remove style blocks without a theme attribute specified.
+ * Given the source of an SFC and the name of a build, this method will remove all
+ * style blocks that have a build attribute specified whose value does not equal the
+ * given build name. It will not remove style blocks without a build attribute specified.
  */
-export const removeOtherThemes = (source: string, build: string): string => {
+export const removeOtherStyles = (source: string, build: string): string => {
+  const styles: SFCBlock[] = parse(source).styles;
+
+  for (const style of styles) {
+    if (style.attrs.builds && style.attrs.builds.split(',').indexOf(build) === -1) {
+      return removeOtherStyles(removeStyleBlock(source, style), build);
+    }
+  }
+  return source;
+};
+
+/**
+ * Given the source of an SFC and the name of a build, this method will remove all
+ * style blocks that have a build attribute specified whose value does not equal the
+ * given build name. It will not remove style blocks without a build attribute specified.
+ */
+export const addRuntimeQualifiers = (source: string): string => {
   const styles: SFCBlock[] = parse(source).styles;
 
   for (const style of styles) {
     if (style.attrs.title) {
-      source = addTitleQualifier(source, style);
-    }
-    if (style.attrs.builds && style.attrs.builds.split(',').indexOf(build) === -1) {
-      return removeOtherThemes(removeStyleBlock(source, style), build);
+      source = addRuntimeQualifiers(addTitleQualifier(source, style));
     }
   }
   return source;
@@ -83,5 +102,5 @@ export default function vueThemeLoader(this: LoaderOptions, source: string) {
   // getOptions from loader-utils must be used to get loader options
   const { build = '' } = getOptions<LoaderOptions>(this) || {};
 
-  return removeOtherThemes(source, build);
+  source = addRuntimeQualifiers(removeOtherStyles(source, build));
 }

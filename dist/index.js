@@ -33,25 +33,42 @@ exports.addTitleQualifier = function (source, styleDescriptor) {
     var end = isSelfClosing
         ? styleDescriptor.start
         : source.indexOf('>', styleDescriptor.end);
-    var qualifiedStyle = "#app[data-title=\"" + title + "\"] { " + source.slice(start, end) + " }";
+    var style = source.substring(start, end);
+    var contentStart = style.indexOf(styleDescriptor.content, start);
+    var contentEnd = contentStart + styleDescriptor.content.length;
+    var qualifiedStyle = "#app[data-title=\"" + title + "\"] { " + styleDescriptor.content + " }";
     return source.substring(0, start)
+        + style.substring(0, contentStart)
         + qualifiedStyle
+        + style.substring(contentEnd)
         + source.substring(end + 1, source.length);
 };
 /**
- * Given the source of an SFC and the name of a theme, this method will remove all
- * style blocks that have a theme attribute specified whose value does not equal the
- * given theme name. It will not remove style blocks without a theme attribute specified.
+ * Given the source of an SFC and the name of a build, this method will remove all
+ * style blocks that have a build attribute specified whose value does not equal the
+ * given build name. It will not remove style blocks without a build attribute specified.
  */
-exports.removeOtherThemes = function (source, build) {
+exports.removeOtherStyles = function (source, build) {
     var styles = exports.parse(source).styles;
     for (var _i = 0, styles_1 = styles; _i < styles_1.length; _i++) {
         var style = styles_1[_i];
-        if (style.attrs.title) {
-            source = exports.addTitleQualifier(source, style);
-        }
         if (style.attrs.builds && style.attrs.builds.split(',').indexOf(build) === -1) {
-            return exports.removeOtherThemes(exports.removeStyleBlock(source, style), build);
+            return exports.removeOtherStyles(exports.removeStyleBlock(source, style), build);
+        }
+    }
+    return source;
+};
+/**
+ * Given the source of an SFC and the name of a build, this method will remove all
+ * style blocks that have a build attribute specified whose value does not equal the
+ * given build name. It will not remove style blocks without a build attribute specified.
+ */
+exports.addRuntimeQualifiers = function (source) {
+    var styles = exports.parse(source).styles;
+    for (var _i = 0, styles_2 = styles; _i < styles_2.length; _i++) {
+        var style = styles_2[_i];
+        if (style.attrs.title) {
+            source = exports.addRuntimeQualifiers(exports.addTitleQualifier(source, style));
         }
     }
     return source;
@@ -68,6 +85,6 @@ exports.removeOtherThemes = function (source, build) {
 function vueThemeLoader(source) {
     // getOptions from loader-utils must be used to get loader options
     var _a = (loader_utils_1.getOptions(this) || {}).build, build = _a === void 0 ? '' : _a;
-    return exports.removeOtherThemes(source, build);
+    source = exports.addRuntimeQualifiers(exports.removeOtherStyles(source, build));
 }
 exports.default = vueThemeLoader;

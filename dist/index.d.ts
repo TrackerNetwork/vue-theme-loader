@@ -13,11 +13,17 @@ export declare const parse: (source: string) => SFCDescriptor;
 export declare const removeStyleBlock: (source: string, styleDescriptor: SFCBlock) => string;
 export declare const addTitleQualifier: (source: string, styleDescriptor: SFCBlock) => string;
 /**
- * Given the source of an SFC and the name of a theme, this method will remove all
- * style blocks that have a theme attribute specified whose value does not equal the
- * given theme name. It will not remove style blocks without a theme attribute specified.
+ * Given the source of an SFC and the name of a build, this method will remove all
+ * style blocks that have a build attribute specified whose value does not equal the
+ * given build name. It will not remove style blocks without a build attribute specified.
  */
-export declare const removeOtherThemes: (source: string, build: string) => string;
+export declare const removeOtherStyles: (source: string, build: string) => string;
+/**
+ * Given the source of an SFC and the name of a build, this method will remove all
+ * style blocks that have a build attribute specified whose value does not equal the
+ * given build name. It will not remove style blocks without a build attribute specified.
+ */
+export declare const addRuntimeQualifiers: (source: string) => string;
 /**
  * The possible options to be provided to the loader
  */
@@ -33,4 +39,4 @@ export interface LoaderOptions {
  * isn't correct to the actual representation of the context, but it satisfies
  * getOptions so that's all I was concerned with.
  */
-export default function vueThemeLoader(this: LoaderOptions, source: string): string;
+export default function vueThemeLoader(this: LoaderOptions, source: string): void;
