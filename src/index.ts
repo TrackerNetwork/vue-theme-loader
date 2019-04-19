@@ -38,7 +38,7 @@ export const addTitleQualifier = (source: string, styleDescriptor: SFCBlock): st
     ? styleDescriptor.start
     : source.indexOf('>', styleDescriptor.end);
 
-  const style = source.substring(start, end);
+  const style = source.substring(start, end + 1);
   const contentStart = style.indexOf(styleDescriptor.content);
   const contentEnd = contentStart + styleDescriptor.content.length;
   const styleOpenTag = style.substring(0, contentStart).replace(/title=\".*?\"/, '');

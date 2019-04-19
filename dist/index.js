@@ -33,7 +33,7 @@ exports.addTitleQualifier = function (source, styleDescriptor) {
     var end = isSelfClosing
         ? styleDescriptor.start
         : source.indexOf('>', styleDescriptor.end);
-    var style = source.substring(start, end);
+    var style = source.substring(start, end + 1);
     var contentStart = style.indexOf(styleDescriptor.content);
     var contentEnd = contentStart + styleDescriptor.content.length;
     var styleOpenTag = style.substring(0, contentStart).replace(/title=\".*?\"/, '');
