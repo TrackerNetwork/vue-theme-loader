@@ -103,5 +103,5 @@ export default function vueThemeLoader(this: LoaderOptions, source: string) {
   // getOptions from loader-utils must be used to get loader options
   const { build = '' } = getOptions<LoaderOptions>(this) || {};
 
-  source = addRuntimeQualifiers(removeOtherStyles(source, build));
+  return addRuntimeQualifiers(removeOtherStyles(source, build));
 }

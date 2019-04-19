@@ -39,4 +39,4 @@ export interface LoaderOptions {
  * isn't correct to the actual representation of the context, but it satisfies
  * getOptions so that's all I was concerned with.
  */
-export default function vueThemeLoader(this: LoaderOptions, source: string): void;
+export default function vueThemeLoader(this: LoaderOptions, source: string): string;

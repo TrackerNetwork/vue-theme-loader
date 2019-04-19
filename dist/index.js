@@ -85,6 +85,6 @@ exports.addRuntimeQualifiers = function (source) {
 function vueThemeLoader(source) {
     // getOptions from loader-utils must be used to get loader options
     var _a = (loader_utils_1.getOptions(this) || {}).build, build = _a === void 0 ? '' : _a;
-    source = exports.addRuntimeQualifiers(exports.removeOtherStyles(source, build));
+    return exports.addRuntimeQualifiers(exports.removeOtherStyles(source, build));
 }
 exports.default = vueThemeLoader;
