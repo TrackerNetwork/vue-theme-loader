@@ -43,11 +43,9 @@ export const addTitleQualifier = (source: string, styleDescriptor: SFCBlock): st
 
   const qualifiedStyle = `#app[data-title="${title}"] { ${styleDescriptor.content} }`;
 
-  return source.substring(0, start)
-    + style.substring(0, contentStart)
+  return source.substring(0, contentStart)
     + qualifiedStyle
-    + style.substring(contentEnd)
-    + source.substring(end + 1, source.length);
+    + source.substring(contentEnd);
 };
 
 /**

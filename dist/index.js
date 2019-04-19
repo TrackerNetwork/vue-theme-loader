@@ -37,11 +37,9 @@ exports.addTitleQualifier = function (source, styleDescriptor) {
     var contentStart = style.indexOf(styleDescriptor.content, start);
     var contentEnd = contentStart + styleDescriptor.content.length;
     var qualifiedStyle = "#app[data-title=\"" + title + "\"] { " + styleDescriptor.content + " }";
-    return source.substring(0, start)
-        + style.substring(0, contentStart)
+    return source.substring(0, contentStart)
         + qualifiedStyle
-        + style.substring(contentEnd)
-        + source.substring(end + 1, source.length);
+        + source.substring(contentEnd);
 };
 /**
  * Given the source of an SFC and the name of a build, this method will remove all
