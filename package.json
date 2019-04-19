@@ -18,7 +18,7 @@
     "release": "np --no-publish",
     "precommit": "lint-staged",
     "postcheckout": "yarn",
-    "postinstall": "tsc"
+    "prepare": "npm run build"
   },
   "lint-staged": {
     "*.ts": [
