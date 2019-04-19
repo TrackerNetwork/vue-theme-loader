@@ -17,7 +17,8 @@
     "lint": "tslint src/**/*.ts",
     "release": "np --no-publish",
     "precommit": "lint-staged",
-    "postcheckout": "yarn"
+    "postcheckout": "yarn",
+    "postinstall": "tsc"
   },
   "lint-staged": {
     "*.ts": [

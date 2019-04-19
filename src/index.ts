@@ -28,18 +28,37 @@ export const removeStyleBlock = (source: string, styleDescriptor: SFCBlock): str
     + source.substring(end + 1, source.length);
 };
 
+export const addTitleQualifier = (source: string, styleDescriptor: SFCBlock): string => {
+  const title = styleDescriptor.attrs.title;
+  const isSelfClosing = styleDescriptor.end === undefined;
+
+  const start = source.lastIndexOf('<', styleDescriptor.start - 1);
+  const end = isSelfClosing
+    ? styleDescriptor.start
+    : source.indexOf('>', styleDescriptor.end);
+
+  const qualifiedStyle = `body[data-title="${title}"] { ${source.slice(start, end)} }`;
+
+  return source.substring(0, start)
+    + qualifiedStyle
+    + source.substring(end + 1, source.length);
+};
+
 /**
  * Given the source of an SFC and the name of a theme, this method will remove all
  * style blocks that have a theme attribute specified whose value does not equal the
  * given theme name. It will not remove style blocks without a theme attribute specified.
  */
-export const removeOtherThemes = (source: string, theme?: string): string => {
+export const removeOtherThemes = (source: string, build: string): string => {
   const styles: SFCBlock[] = parse(source).styles;
 
   for (const style of styles) {
-      if (style.attrs.theme && style.attrs.theme !== theme) {
-        return removeOtherThemes(removeStyleBlock(source, style), theme);
-      }
+    if (style.attrs.title) {
+      source = addTitleQualifier(source, style);
+    }
+    if (style.attrs.builds && style.attrs.builds.split(',').indexOf(build) === -1) {
+      return removeOtherThemes(removeStyleBlock(source, style), build);
+    }
   }
   return source;
 };
@@ -48,7 +67,7 @@ export const removeOtherThemes = (source: string, theme?: string): string => {
  * The possible options to be provided to the loader
  */
 export interface LoaderOptions {
-  theme?: string;
+  build: string;
 }
 
 /**
@@ -62,7 +81,7 @@ export interface LoaderOptions {
  */
 export default function vueThemeLoader(this: LoaderOptions, source: string) {
   // getOptions from loader-utils must be used to get loader options
-  const { theme = '' } = getOptions<LoaderOptions>(this) || {};
+  const { build = '' } = getOptions<LoaderOptions>(this) || {};
 
-  return removeOtherThemes(source, theme);
+  return removeOtherThemes(source, build);
 }
