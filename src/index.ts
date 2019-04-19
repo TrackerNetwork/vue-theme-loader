@@ -37,8 +37,7 @@ export const addTitleQualifier = (source: string, styleDescriptor: SFCBlock): st
     ? styleDescriptor.start
     : source.indexOf('>', styleDescriptor.end);
 
-  const style = source.substring(start, end);
-  const contentStart = style.indexOf(styleDescriptor.content, start);
+  const contentStart = source.indexOf(styleDescriptor.content, start);
   const contentEnd = contentStart + styleDescriptor.content.length;
 
   const qualifiedStyle = `#app[data-title="${title}"] { ${styleDescriptor.content} }`;
@@ -74,7 +73,7 @@ export const addRuntimeQualifiers = (source: string): string => {
 
   for (const style of styles) {
     if (style.attrs.title) {
-      source = addRuntimeQualifiers(addTitleQualifier(source, style));
+      return addRuntimeQualifiers(addTitleQualifier(source, style));
     }
   }
   return source;

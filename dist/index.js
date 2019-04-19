@@ -33,8 +33,7 @@ exports.addTitleQualifier = function (source, styleDescriptor) {
     var end = isSelfClosing
         ? styleDescriptor.start
         : source.indexOf('>', styleDescriptor.end);
-    var style = source.substring(start, end);
-    var contentStart = style.indexOf(styleDescriptor.content, start);
+    var contentStart = source.indexOf(styleDescriptor.content, start);
     var contentEnd = contentStart + styleDescriptor.content.length;
     var qualifiedStyle = "#app[data-title=\"" + title + "\"] { " + styleDescriptor.content + " }";
     return source.substring(0, contentStart)
@@ -66,7 +65,7 @@ exports.addRuntimeQualifiers = function (source) {
     for (var _i = 0, styles_2 = styles; _i < styles_2.length; _i++) {
         var style = styles_2[_i];
         if (style.attrs.title) {
-            source = exports.addRuntimeQualifiers(exports.addTitleQualifier(source, style));
+            return exports.addRuntimeQualifiers(exports.addTitleQualifier(source, style));
         }
     }
     return source;
