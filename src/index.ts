@@ -30,6 +30,7 @@ export const removeStyleBlock = (source: string, styleDescriptor: SFCBlock): str
 
 export const addTitleQualifier = (source: string, styleDescriptor: SFCBlock): string => {
   const title = styleDescriptor.attrs.title;
+
   const isSelfClosing = styleDescriptor.end === undefined;
 
   const start = source.lastIndexOf('<', styleDescriptor.start - 1);
@@ -37,14 +38,17 @@ export const addTitleQualifier = (source: string, styleDescriptor: SFCBlock): st
     ? styleDescriptor.start
     : source.indexOf('>', styleDescriptor.end);
 
-  const contentStart = source.indexOf(styleDescriptor.content, start);
+  const style = source.substring(start, end);
+  const contentStart = style.indexOf(styleDescriptor.content);
   const contentEnd = contentStart + styleDescriptor.content.length;
+  const styleOpenTag = style.substring(0, contentStart).replace(/title=\".*?\"/, '');
+  const styleCloseTag = style.substring(contentEnd);
 
-  const qualifiedStyle = `#app[data-title="${title}"] { ${styleDescriptor.content} }`;
+  const qualifiedStyle = `${styleOpenTag} #app[data-title="${title}"] { ${styleDescriptor.content} } ${styleCloseTag}`;
 
-  return source.substring(0, contentStart)
+  return source.substring(0, start)
     + qualifiedStyle
-    + source.substring(contentEnd);
+    + source.substring(end + 1, source.length);
 };
 
 /**

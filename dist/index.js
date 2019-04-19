@@ -33,12 +33,15 @@ exports.addTitleQualifier = function (source, styleDescriptor) {
     var end = isSelfClosing
         ? styleDescriptor.start
         : source.indexOf('>', styleDescriptor.end);
-    var contentStart = source.indexOf(styleDescriptor.content, start);
+    var style = source.substring(start, end);
+    var contentStart = style.indexOf(styleDescriptor.content);
     var contentEnd = contentStart + styleDescriptor.content.length;
-    var qualifiedStyle = "#app[data-title=\"" + title + "\"] { " + styleDescriptor.content + " }";
-    return source.substring(0, contentStart)
+    var styleOpenTag = style.substring(0, contentStart).replace(/title=\".*?\"/, '');
+    var styleCloseTag = style.substring(contentEnd);
+    var qualifiedStyle = styleOpenTag + " #app[data-title=\"" + title + "\"] { " + styleDescriptor.content + " } " + styleCloseTag;
+    return source.substring(0, start)
         + qualifiedStyle
-        + source.substring(contentEnd);
+        + source.substring(end + 1, source.length);
 };
 /**
  * Given the source of an SFC and the name of a build, this method will remove all
